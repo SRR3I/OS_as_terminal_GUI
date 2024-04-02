@@ -8,19 +8,13 @@ class CommandPromptGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("Command Prompt GUI")
+        self.title("OS")
 
         self.command_prompt = CommandPrompt()
 
         self.create_widgets()
 
     def create_widgets(self):
-        self.command_label = tk.Label(self, text="Enter command:")
-        self.command_label.pack()
-
-        self.command_entry = tk.Entry(self)
-        self.command_entry.pack(fill=tk.X)
-
         self.run_button = tk.Button(self, text="Run", command=self.run_command)
         self.run_button.pack()
 
@@ -31,6 +25,11 @@ class CommandPromptGUI(tk.Tk):
         self.output_text = tk.Text(self, height=20, width=80)
         self.output_text.pack()
 
+        self.command_label = tk.Label(self, text="Enter command:")
+        self.command_label.pack()
+
+        self.command_entry = tk.Entry(self)
+        self.command_entry.pack(fill=tk.X)
         # Bind the Enter key to run the command
         self.bind("<Return>", lambda event: self.run_command())
 
@@ -40,9 +39,20 @@ class CommandPromptGUI(tk.Tk):
         self.output_text.see(tk.END)
         self.command_entry.delete(0, tk.END)
 
-        output = self.command_prompt.execute_command(command)
-        self.output_text.insert(tk.END, output + "\n\n")
-        self.output_text.see(tk.END)
+        if command.upper() == "QUIT":
+            self.quit_program()
+        elif command.upper() == "CLEAR":
+            self.clear_screen()
+        else:
+            output = self.command_prompt.execute_command(command)
+            self.output_text.insert(tk.END, output + "\n\n")
+            self.output_text.see(tk.END)
+
+    def quit_program(self):
+        self.destroy()
+
+    def clear_screen(self):
+        self.output_text.delete('1.0', tk.END)
 
     def browse_directory(self):
         directory = filedialog.askdirectory()
@@ -52,7 +62,7 @@ class CommandPromptGUI(tk.Tk):
 
 class CommandPrompt:
     def execute_command(self, command):
-        command.upper()
+        command = command.upper()
         try:
             if command == "HELP":
                 return self.display_help()
